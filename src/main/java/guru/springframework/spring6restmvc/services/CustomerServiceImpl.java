@@ -1,8 +1,10 @@
 package guru.springframework.spring6restmvc.services;
 
+import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.model.Customer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -67,5 +69,34 @@ public class CustomerServiceImpl implements CustomerService {
         customerMap.put(savedCustomer.getId(), savedCustomer);
 
         return savedCustomer;
+    }
+
+    @Override
+    public void updateCustomerById(UUID customerId, Customer customer) {
+        Customer existingCustomer = customerMap.get(customerId);
+        existingCustomer.setVersion(existingCustomer.getVersion() + 1);
+        existingCustomer.setLastModifiedDate(LocalDateTime.now());
+        existingCustomer.setCustomerName(customer.getCustomerName());
+
+        customerMap.put(existingCustomer.getId(), existingCustomer);
+    }
+
+    @Override
+    public void deleteBeerById(UUID id) {
+        customerMap.remove(id);
+    }
+
+    @Override
+    public void modifyBeerById(UUID customerId, Customer customer) {
+        Customer existingCustomer = customerMap.get(customerId);
+
+        if(StringUtils.hasText(customer.getCustomerName())){
+            existingCustomer.setCustomerName(customer.getCustomerName());
+        }
+
+        existingCustomer.setVersion(existingCustomer.getVersion() + 1);
+        existingCustomer.setLastModifiedDate(LocalDateTime.now());
+
+        customerMap.put(existingCustomer.getId(), existingCustomer);
     }
 }

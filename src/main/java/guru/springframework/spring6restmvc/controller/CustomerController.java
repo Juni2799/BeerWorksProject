@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
+import guru.springframework.spring6restmvc.model.Beer;
 import guru.springframework.spring6restmvc.model.Customer;
 import guru.springframework.spring6restmvc.services.CustomerService;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,24 @@ public class CustomerController {
         httpHeaders.add("Location-By-Id", "/api/v1/customers/" + savedCustomer.getId().toString());
 
         return new ResponseEntity(httpHeaders, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/api/v1/customers/{customerId}")
+    public ResponseEntity updateExistingCustomer(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer){
+        customerService.updateCustomerById(customerId, customer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/api/v1/customers/{customerId}")
+    public ResponseEntity deleteCustomerById(@PathVariable("customerId") UUID id){
+        customerService.deleteBeerById(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/api/v1/customers/{customerId}")
+    public ResponseEntity modifyCustomerById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer){
+        customerService.modifyBeerById(customerId, customer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
 
