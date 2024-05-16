@@ -31,6 +31,24 @@ public class BeerController {
         return new ResponseEntity(httpHeaders, HttpStatus.CREATED);
     }
 
+    @PutMapping("/api/v1/beers/{beerId}")
+    public ResponseEntity updateExistingBeer(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer){
+        beerService.updateBeerById(beerId, beer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/api/v1/beers/{beerId}")
+    public ResponseEntity deleteBeerById(@PathVariable("beerId") UUID id){
+        beerService.deleteBeerById(id);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/api/v1/beers/{beerId}")
+    public ResponseEntity modifyBeerById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer){
+        beerService.modifyBeerById(beerId, beer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
     @RequestMapping("/api/v1/beers")
     public List<Beer> getBeers(){
         return beerService.getBeers();

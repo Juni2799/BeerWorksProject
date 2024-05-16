@@ -15,4 +15,10 @@ public interface BeerService {
     List<Beer> getBeers();
 
     Beer saveNewBeer(Beer beer);
+
+    void updateBeerById(UUID beerId, Beer beer);
+
+    void deleteBeerById(UUID id);
+
+    void modifyBeerById(UUID beerId, Beer beer);
 }
