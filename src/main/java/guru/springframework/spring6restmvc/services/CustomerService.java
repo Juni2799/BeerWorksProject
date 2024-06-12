@@ -13,7 +13,7 @@ public interface CustomerService {
 
     void updateCustomerById(UUID customerId, Customer customer);
 
-    void deleteBeerById(UUID id);
+    void deleteCustomerById(UUID id);
 
-    void modifyBeerById(UUID customerId, Customer customer);
+    void modifyCustomerById(UUID customerId, Customer customer);
 }

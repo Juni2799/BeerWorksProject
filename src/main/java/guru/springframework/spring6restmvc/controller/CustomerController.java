@@ -42,13 +42,13 @@ public class CustomerController {
 
     @DeleteMapping("/api/v1/customers/{customerId}")
     public ResponseEntity deleteCustomerById(@PathVariable("customerId") UUID id){
-        customerService.deleteBeerById(id);
+        customerService.deleteCustomerById(id);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/api/v1/customers/{customerId}")
     public ResponseEntity modifyCustomerById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer){
-        customerService.modifyBeerById(customerId, customer);
+        customerService.modifyCustomerById(customerId, customer);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 

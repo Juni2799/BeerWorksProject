@@ -82,12 +82,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void deleteBeerById(UUID id) {
+    public void deleteCustomerById(UUID id) {
         customerMap.remove(id);
     }
 
     @Override
-    public void modifyBeerById(UUID customerId, Customer customer) {
+    public void modifyCustomerById(UUID customerId, Customer customer) {
         Customer existingCustomer = customerMap.get(customerId);
 
         if(StringUtils.hasText(customer.getCustomerName())){
