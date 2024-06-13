@@ -1,7 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
-import guru.springframework.spring6restmvc.model.Beer;
-import guru.springframework.spring6restmvc.model.Customer;
+import guru.springframework.spring6restmvc.model.CustomerDTO;
 import guru.springframework.spring6restmvc.services.CustomerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,23 +19,23 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @RequestMapping("/api/v1/customers")
-    public List<Customer> getCustomers(){
+    public List<CustomerDTO> getCustomers(){
         return customerService.getCustomers();
     }
 
     @PostMapping("/api/v1/customers")
-    public ResponseEntity createNewCustomer(@RequestBody Customer customer){
-        Customer savedCustomer = customerService.saveNewCustomer(customer);
+    public ResponseEntity createNewCustomer(@RequestBody CustomerDTO customerDTO){
+        CustomerDTO savedCustomerDTO = customerService.saveNewCustomer(customerDTO);
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Location-By-Id", "/api/v1/customers/" + savedCustomer.getId().toString());
+        httpHeaders.add("Location-By-Id", "/api/v1/customers/" + savedCustomerDTO.getId().toString());
 
         return new ResponseEntity(httpHeaders, HttpStatus.CREATED);
     }
 
     @PutMapping("/api/v1/customers/{customerId}")
-    public ResponseEntity updateExistingCustomer(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer){
-        customerService.updateCustomerById(customerId, customer);
+    public ResponseEntity updateExistingCustomer(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customerDTO){
+        customerService.updateCustomerById(customerId, customerDTO);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -47,14 +46,14 @@ public class CustomerController {
     }
 
     @PatchMapping("/api/v1/customers/{customerId}")
-    public ResponseEntity modifyCustomerById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer){
-        customerService.modifyCustomerById(customerId, customer);
+    public ResponseEntity modifyCustomerById(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDTO customerDTO){
+        customerService.modifyCustomerById(customerId, customerDTO);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
 
     @RequestMapping("/api/v1/customers/{customerId}")
-    public Customer getCustomerById(@PathVariable("customerId") UUID customerId){
+    public CustomerDTO getCustomerById(@PathVariable("customerId") UUID customerId){
         return customerService.getCustomerById(customerId);
     }
 }

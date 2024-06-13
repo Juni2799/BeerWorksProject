@@ -1,6 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
-import guru.springframework.spring6restmvc.model.Beer;
+import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.services.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,18 +22,18 @@ public class BeerController {
     private final BeerService beerService;
 
     @PostMapping("/api/v1/beers")
-    public ResponseEntity createNewBeer(@RequestBody Beer beer){
-        Beer savedBeer = beerService.saveNewBeer(beer);
+    public ResponseEntity createNewBeer(@RequestBody BeerDTO beerDTO){
+        BeerDTO savedBeerDTO = beerService.saveNewBeer(beerDTO);
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Location-By-Id", "/api/v1/beers/" + savedBeer.getId().toString());
+        httpHeaders.add("Location-By-Id", "/api/v1/beers/" + savedBeerDTO.getId().toString());
 
         return new ResponseEntity(httpHeaders, HttpStatus.CREATED);
     }
 
     @PutMapping("/api/v1/beers/{beerId}")
-    public ResponseEntity updateExistingBeer(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer){
-        beerService.updateBeerById(beerId, beer);
+    public ResponseEntity updateExistingBeer(@PathVariable("beerId") UUID beerId, @RequestBody BeerDTO beerDTO){
+        beerService.updateBeerById(beerId, beerDTO);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
@@ -44,18 +44,18 @@ public class BeerController {
     }
 
     @PatchMapping("/api/v1/beers/{beerId}")
-    public ResponseEntity modifyBeerById(@PathVariable("beerId") UUID beerId, @RequestBody Beer beer){
-        beerService.modifyBeerById(beerId, beer);
+    public ResponseEntity modifyBeerById(@PathVariable("beerId") UUID beerId, @RequestBody BeerDTO beerDTO){
+        beerService.modifyBeerById(beerId, beerDTO);
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @RequestMapping("/api/v1/beers")
-    public List<Beer> getBeers(){
+    public List<BeerDTO> getBeers(){
         return beerService.getBeers();
     }
 
     @RequestMapping("/api/v1/beers/{beerId}")
-    public Beer getBeerById(@PathVariable("beerId") UUID beerId){
+    public BeerDTO getBeerById(@PathVariable("beerId") UUID beerId){
 
         log.debug("Get Beer by Id - in controller");
 

@@ -1,19 +1,27 @@
-package guru.springframework.spring6restmvc.model;
+package guru.springframework.spring6restmvc.entities;
 
-import lombok.Builder;
-import lombok.Data;
+import guru.springframework.spring6restmvc.model.BeerStyle;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * Created by jt, Spring Framework Guru.
- */
+@Getter
+@Setter
 @Builder
-@Data
+@Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Beer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false)
     private UUID id;
+
+    @Version
     private Integer version;
     private String beerName;
     private BeerStyle beerStyle;

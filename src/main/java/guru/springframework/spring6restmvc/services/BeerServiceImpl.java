@@ -1,6 +1,6 @@
 package guru.springframework.spring6restmvc.services;
 
-import guru.springframework.spring6restmvc.model.Beer;
+import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,12 +17,12 @@ import java.util.*;
 @Service
 public class BeerServiceImpl implements BeerService {
 
-    private Map<UUID, Beer> beerHashMap;
+    private Map<UUID, BeerDTO> beerHashMap;
 
     public BeerServiceImpl() {
         beerHashMap = new HashMap<>();
 
-        Beer beer1 = Beer.builder()
+        BeerDTO beerDTO1 = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
                 .beerName("Galaxy Cat")
@@ -34,7 +34,7 @@ public class BeerServiceImpl implements BeerService {
                 .updateDate(LocalDateTime.now())
                 .build();
 
-        Beer beer2 = Beer.builder()
+        BeerDTO beerDTO2 = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
                 .beerName("Crank")
@@ -46,7 +46,7 @@ public class BeerServiceImpl implements BeerService {
                 .updateDate(LocalDateTime.now())
                 .build();
 
-        Beer beer3 = Beer.builder()
+        BeerDTO beerDTO3 = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
                 .beerName("Sunshine City")
@@ -58,46 +58,46 @@ public class BeerServiceImpl implements BeerService {
                 .updateDate(LocalDateTime.now())
                 .build();
 
-        beerHashMap.put(beer1.getId(), beer1);
-        beerHashMap.put(beer2.getId(), beer2);
-        beerHashMap.put(beer3.getId(), beer3);
+        beerHashMap.put(beerDTO1.getId(), beerDTO1);
+        beerHashMap.put(beerDTO2.getId(), beerDTO2);
+        beerHashMap.put(beerDTO3.getId(), beerDTO3);
     }
 
     @Override
-    public List<Beer> getBeers() {
+    public List<BeerDTO> getBeers() {
         return new ArrayList<>(beerHashMap.values());
     }
 
     @Override
-    public Beer saveNewBeer(Beer beer) {
-        Beer savedBeer = Beer.builder()
+    public BeerDTO saveNewBeer(BeerDTO beerDTO) {
+        BeerDTO savedBeerDTO = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .version(1)
-                .beerName(beer.getBeerName())
-                .beerStyle(beer.getBeerStyle())
-                .upc(beer.getUpc())
-                .quantityOnHand(beer.getQuantityOnHand())
-                .price(beer.getPrice())
+                .beerName(beerDTO.getBeerName())
+                .beerStyle(beerDTO.getBeerStyle())
+                .upc(beerDTO.getUpc())
+                .quantityOnHand(beerDTO.getQuantityOnHand())
+                .price(beerDTO.getPrice())
                 .createdDate(LocalDateTime.now())
                 .updateDate(LocalDateTime.now())
                 .build();
 
-        beerHashMap.put(savedBeer.getId(), savedBeer);
+        beerHashMap.put(savedBeerDTO.getId(), savedBeerDTO);
 
-        return savedBeer;
+        return savedBeerDTO;
     }
 
     @Override
-    public void updateBeerById(UUID beerId, Beer beer) {
-        Beer existingBeer = beerHashMap.get(beerId);
-        existingBeer.setVersion(existingBeer.getVersion() + 1);
-        existingBeer.setBeerName(beer.getBeerName());
-        existingBeer.setPrice(beer.getPrice());
-        existingBeer.setUpc(beer.getUpc());
-        existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
-        existingBeer.setUpdateDate(LocalDateTime.now());
+    public void updateBeerById(UUID beerId, BeerDTO beerDTO) {
+        BeerDTO existingBeerDTO = beerHashMap.get(beerId);
+        existingBeerDTO.setVersion(existingBeerDTO.getVersion() + 1);
+        existingBeerDTO.setBeerName(beerDTO.getBeerName());
+        existingBeerDTO.setPrice(beerDTO.getPrice());
+        existingBeerDTO.setUpc(beerDTO.getUpc());
+        existingBeerDTO.setQuantityOnHand(beerDTO.getQuantityOnHand());
+        existingBeerDTO.setUpdateDate(LocalDateTime.now());
 
-        beerHashMap.put(existingBeer.getId(), existingBeer);
+        beerHashMap.put(existingBeerDTO.getId(), existingBeerDTO);
     }
 
     @Override
@@ -106,37 +106,37 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public void modifyBeerById(UUID beerId, Beer beer) {
-        Beer existingBeer = beerHashMap.get(beerId);
+    public void modifyBeerById(UUID beerId, BeerDTO beerDTO) {
+        BeerDTO existingBeerDTO = beerHashMap.get(beerId);
 
-        if(StringUtils.hasText(beer.getBeerName())){
-            existingBeer.setBeerName(beer.getBeerName());
+        if(StringUtils.hasText(beerDTO.getBeerName())){
+            existingBeerDTO.setBeerName(beerDTO.getBeerName());
         }
 
-        if(beer.getBeerStyle() != null){
-            existingBeer.setBeerStyle(beer.getBeerStyle());
+        if(beerDTO.getBeerStyle() != null){
+            existingBeerDTO.setBeerStyle(beerDTO.getBeerStyle());
         }
 
-        if(StringUtils.hasText(beer.getUpc())){
-            existingBeer.setUpc(beer.getUpc());
+        if(StringUtils.hasText(beerDTO.getUpc())){
+            existingBeerDTO.setUpc(beerDTO.getUpc());
         }
 
-        if(beer.getQuantityOnHand() != null){
-            existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
+        if(beerDTO.getQuantityOnHand() != null){
+            existingBeerDTO.setQuantityOnHand(beerDTO.getQuantityOnHand());
         }
 
-        if(beer.getPrice() != null){
-            existingBeer.setPrice(beer.getPrice());
+        if(beerDTO.getPrice() != null){
+            existingBeerDTO.setPrice(beerDTO.getPrice());
         }
 
-        existingBeer.setVersion(existingBeer.getVersion() + 1);
-        existingBeer.setUpdateDate(LocalDateTime.now());
+        existingBeerDTO.setVersion(existingBeerDTO.getVersion() + 1);
+        existingBeerDTO.setUpdateDate(LocalDateTime.now());
 
-        beerHashMap.put(existingBeer.getId(), existingBeer);
+        beerHashMap.put(existingBeerDTO.getId(), existingBeerDTO);
     }
 
     @Override
-    public Beer getBeerById(UUID id) {
+    public BeerDTO getBeerById(UUID id) {
 
         log.debug("Get Beer by Id - in service. Id: " + id.toString());
 
