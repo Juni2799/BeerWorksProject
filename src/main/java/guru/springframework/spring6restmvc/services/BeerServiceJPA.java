@@ -38,21 +38,34 @@ public class BeerServiceJPA implements BeerService{
 
     @Override
     public BeerDTO saveNewBeer(BeerDTO beerDTO) {
-        return null;
+        return beerMapper.beerToBeerDTO(beerRepository.save(beerMapper.beerDTOtoBeer(beerDTO)));
     }
 
     @Override
     public void updateBeerById(UUID beerId, BeerDTO beerDTO) {
+        Beer savedBeer = beerRepository.findById(beerId).orElseThrow(() -> new NotFoundException("No beer found with id: " + beerId));
+        savedBeer.setBeerName(beerDTO.getBeerName());
+        savedBeer.setBeerStyle(beerDTO.getBeerStyle());
+        savedBeer.setUpc(beerDTO.getUpc());
+        savedBeer.setPrice(beerDTO.getPrice());
 
+        beerRepository.save(savedBeer);
     }
 
     @Override
-    public void deleteBeerById(UUID id) {
-
+    public boolean deleteBeerById(UUID id) {
+        beerRepository.deleteById(id);
+        return true;
     }
 
     @Override
     public void modifyBeerById(UUID beerId, BeerDTO beerDTO) {
+        Beer savedBeer = beerRepository.findById(beerId).orElseThrow(() -> new NotFoundException("No beer found with id: " + beerId));
+        if(!beerDTO.getBeerName().isEmpty()) savedBeer.setBeerName(beerDTO.getBeerName());
+        if(beerDTO.getBeerStyle() != null) savedBeer.setBeerStyle(beerDTO.getBeerStyle());
+        if(!beerDTO.getUpc().isEmpty()) savedBeer.setUpc(beerDTO.getUpc());
+        if(beerDTO.getPrice() != null) savedBeer.setPrice(beerDTO.getPrice());
 
+        beerRepository.save(savedBeer);
     }
 }
