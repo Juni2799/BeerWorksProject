@@ -33,7 +33,7 @@ public class CustomerServiceJPA implements CustomerService{
     @Override
     public CustomerDTO getCustomerById(UUID id) {
         Customer savedCustomer = customerRepository.findById(id).orElseThrow(() -> new NotFoundException("No customer found with id: " + id));
-        return null;
+        return customerMapper.customerToCustomerDTO(savedCustomer);
     }
 
     @Override
