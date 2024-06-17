@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.services;
 
+import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.entities.Customer;
 import guru.springframework.spring6restmvc.exceptions.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.CustomerMapper;
@@ -38,21 +39,28 @@ public class CustomerServiceJPA implements CustomerService{
 
     @Override
     public CustomerDTO saveNewCustomer(CustomerDTO customerDTO) {
-        return null;
+        return customerMapper.customerToCustomerDTO(customerRepository.save(customerMapper.customerDTOtoCustomer(customerDTO)));
     }
 
     @Override
     public void updateCustomerById(UUID customerId, CustomerDTO customerDTO) {
+        Customer savedCustomer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("No beer found with id: " + customerId));
+        savedCustomer.setName(customerDTO.getCustomerName());
 
+        customerRepository.save(savedCustomer);
     }
 
     @Override
-    public void deleteCustomerById(UUID id) {
-
+    public boolean deleteCustomerById(UUID id) {
+        customerRepository.deleteById(id);
+        return true;
     }
 
     @Override
     public void modifyCustomerById(UUID customerId, CustomerDTO customerDTO) {
+        Customer savedCustomer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("No beer found with id: " + customerId));
+        if(!customerDTO.getCustomerName().isEmpty()) savedCustomer.setName(customerDTO.getCustomerName());
 
+        customerRepository.save(savedCustomer);
     }
 }
