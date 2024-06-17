@@ -20,5 +20,6 @@ public class CustomerRepositoryTest {
 
         assertThat(savedCustomer).isNotNull();
         assertThat(savedCustomer.getId()).isNotNull();
+        assertThat(savedCustomer.getVersion()).isNotNull();
     }
 }
