@@ -1,5 +1,7 @@
 package guru.springframework.spring6restmvc.services;
 
+import guru.springframework.spring6restmvc.entities.Customer;
+import guru.springframework.spring6restmvc.exceptions.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.CustomerMapper;
 import guru.springframework.spring6restmvc.model.CustomerDTO;
 import guru.springframework.spring6restmvc.repository.CustomerRepository;
@@ -30,6 +32,7 @@ public class CustomerServiceJPA implements CustomerService{
 
     @Override
     public CustomerDTO getCustomerById(UUID id) {
+        Customer savedCustomer = customerRepository.findById(id).orElseThrow(() -> new NotFoundException("No customer found with id: " + id));
         return null;
     }
 
