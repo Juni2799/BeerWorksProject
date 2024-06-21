@@ -1,3 +1,4 @@
+--Db initialisation commands
 DROP DATABASE IF EXISTS restdb;
 DROP USER IF EXISTS `restadmin`@`%`;
 CREATE DATABASE IF NOT EXISTS restdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
