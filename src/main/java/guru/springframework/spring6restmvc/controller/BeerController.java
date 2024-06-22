@@ -1,6 +1,7 @@
 package guru.springframework.spring6restmvc.controller;
 
 import guru.springframework.spring6restmvc.model.BeerDTO;
+import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.services.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,8 +52,10 @@ public class BeerController {
     }
 
     @RequestMapping("/api/v1/beers")
-    public List<BeerDTO> getBeers(){
-        return beerService.getBeers();
+    public List<BeerDTO> getBeers(@RequestParam(required = false) String beerName,
+                                  @RequestParam(required = false) BeerStyle beerStyle,
+                                  @RequestParam(required = false) Boolean showInventory){
+        return beerService.getBeers(beerName, beerStyle, showInventory);
     }
 
     @RequestMapping("/api/v1/beers/{beerId}")

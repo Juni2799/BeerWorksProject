@@ -37,8 +37,8 @@ class BeerControllerTest {
     @MockBean
     private BeerService beerService;
 
-    //ObjectMapper is used to create Java POJO to JSON and vice-versa. By autowiring ObjectMapper in Spring Context,
-    //we get an ObjectMapper instance which is auto-configured by Spring with certain console display formats which we
+    //ObjectMapper is used to create Java POJO to JSON and vice-versa. By auto wiring ObjectMapper in Spring Context,
+    //we get an ObjectMapper instance which is autoconfigured by Spring with certain console display formats which we
     //don't have to do manually.
     @Autowired
     private ObjectMapper objectMapper;
@@ -59,7 +59,7 @@ class BeerControllerTest {
 
     @Test
     void getBeerById() throws Exception {
-        BeerDTO testBeerDTO = beerServiceImpl.getBeers().get(0);
+        BeerDTO testBeerDTO = beerServiceImpl.getBeers(null, null, false).get(0);
 
         //mockito is used here for mocking beerService and returning relevant data
         //given(beerService.getBeerById(any(UUID.class))).willReturn(testBeer);
@@ -76,7 +76,7 @@ class BeerControllerTest {
 
     @Test
     void getListBeers() throws Exception {
-        given(beerService.getBeers()).willReturn(beerServiceImpl.getBeers());
+        given(beerService.getBeers(any(), any(), any())).willReturn(beerServiceImpl.getBeers(null, null, false));
 
         mockMvc.perform(get("/api/v1/beers"))
                 .andExpect(status().isOk())
@@ -86,11 +86,11 @@ class BeerControllerTest {
 
     @Test
     public void createBeerTest() throws Exception {
-        BeerDTO beerDTO = beerServiceImpl.getBeers().get(0);
+        BeerDTO beerDTO = beerServiceImpl.getBeers(null, null, false).get(0);
         beerDTO.setVersion(null);
         beerDTO.setId(null);
 
-        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.getBeers().get(1));
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.getBeers(null, null, false).get(1));
 
         mockMvc.perform(post("/api/v1/beers")
                 .accept(MediaType.APPLICATION_JSON)
@@ -105,7 +105,7 @@ class BeerControllerTest {
 
         BeerDTO beerDTO = BeerDTO.builder().build();
 
-        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.getBeers().get(1));
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.getBeers(null, null, false).get(1));
 
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/beers")
                         .accept(MediaType.APPLICATION_JSON)
@@ -120,7 +120,7 @@ class BeerControllerTest {
 
     @Test
     public void updateBeerTest() throws Exception {
-        BeerDTO beerDTO = beerServiceImpl.getBeers().get(0);
+        BeerDTO beerDTO = beerServiceImpl.getBeers(null, null, false).get(0);
 
         mockMvc.perform(put("/api/v1/beers/" + beerDTO.getId())
                 .accept(MediaType.APPLICATION_JSON)
@@ -133,7 +133,7 @@ class BeerControllerTest {
 
     @Test
     public void deleteBeerByIdTest() throws Exception {
-        BeerDTO beerDTO = beerServiceImpl.getBeers().get(0);
+        BeerDTO beerDTO = beerServiceImpl.getBeers(null, null, false).get(0);
 
         mockMvc.perform(delete("/api/v1/beers/" + beerDTO.getId()))
                 .andExpect(status().isNoContent());
@@ -146,7 +146,7 @@ class BeerControllerTest {
 
     @Test
     public void patchBeerByIdTest() throws Exception{
-        BeerDTO beerDTO = beerServiceImpl.getBeers().get(0);
+        BeerDTO beerDTO = beerServiceImpl.getBeers(null, null, false).get(0);
 
         Map<String, Object> beerMap = new HashMap<>();
         beerMap.put("beerName", "New Name");
