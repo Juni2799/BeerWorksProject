@@ -9,23 +9,18 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @Builder
-public class BeerOrder {
-
+public class BeerOrderShipment {
     @Id
     @GeneratedValue(generator = "UUID")
-    @GenericGenerator(
-            name = "UUID",
-            strategy = "org.hibernate.id.UUIDGenerator"
-    )
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     @JdbcTypeCode(SqlTypes.CHAR)
     @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false )
     private UUID id;
@@ -33,25 +28,20 @@ public class BeerOrder {
     @Version
     private Long version;
 
+    @OneToOne
+    private BeerOrder beerOrder;
+
+    private String trackingNumber;
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdDate;
 
     @UpdateTimestamp
     private LocalDateTime lastModifiedDate;
-
-    public boolean isNew() {
-        return this.id == null;
-    }
-
-    private String customerRef;
-
-    @ManyToOne
-    private Customer customer;
-
-    @OneToMany(mappedBy = "beerOrder")
-    private Set<BeerOrderLine> beerOrderLines;
-
-    @OneToOne
-    private BeerOrderShipment beerOrderShipment;
 }
