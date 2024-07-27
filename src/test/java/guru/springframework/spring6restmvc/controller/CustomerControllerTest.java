@@ -1,6 +1,7 @@
 package guru.springframework.spring6restmvc.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import guru.springframework.spring6restmvc.config.SpringSecurityConfig;
 import guru.springframework.spring6restmvc.model.CustomerDTO;
 import guru.springframework.spring6restmvc.services.CustomerService;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -19,10 +21,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CustomerController.class)
+@Import(SpringSecurityConfig.class)
 public class CustomerControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -38,7 +42,8 @@ public class CustomerControllerTest {
         CustomerDTO customerDTO = getCustomerMockData();
         given(customerService.getCustomerById(customerDTO.getId())).willReturn(customerDTO);
 
-        mockMvc.perform(get("/api/v1/customers/" + customerDTO.getId()))
+        mockMvc.perform(get("/api/v1/customers/" + customerDTO.getId())
+                        .with(httpBasic("user1", "password")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(customerDTO.getId().toString())))
@@ -50,7 +55,8 @@ public class CustomerControllerTest {
         List<CustomerDTO> customerDTOS = getCustomerListMockData();
         given(customerService.getCustomers()).willReturn(customerDTOS);
 
-        mockMvc.perform(get("/api/v1/customers"))
+        mockMvc.perform(get("/api/v1/customers")
+                        .with(httpBasic("user1", "password")))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(3)));
@@ -62,6 +68,7 @@ public class CustomerControllerTest {
         given(customerService.saveNewCustomer(any(CustomerDTO.class))).willReturn(customerDTOS.get(1));
 
         mockMvc.perform(post("/api/v1/customers")
+                        .with(httpBasic("user1", "password"))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customerDTOS.get(0))))
@@ -74,6 +81,7 @@ public class CustomerControllerTest {
         List<CustomerDTO> customerDTOS = getCustomerListMockData();
 
         mockMvc.perform(put("/api/v1/customers/" + customerDTOS.get(0).getId())
+                        .with(httpBasic("user1", "password"))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(customerDTOS.get(0))))
@@ -86,7 +94,8 @@ public class CustomerControllerTest {
     public void deleteCustomersByIdTest() throws Exception {
         List<CustomerDTO> customerDTOS = getCustomerListMockData();
 
-        mockMvc.perform(delete("/api/v1/customers/" + customerDTOS.get(0).getId()))
+        mockMvc.perform(delete("/api/v1/customers/" + customerDTOS.get(0).getId())
+                        .with(httpBasic("user1", "password")))
                 .andExpect(status().isNoContent());
 
         ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
@@ -103,6 +112,7 @@ public class CustomerControllerTest {
         customerMap.put("customerName", "New customer");
 
         mockMvc.perform(patch("/api/v1/customers/" + customerDTOS.get(0).getId())
+                        .with(httpBasic("user1", "password"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customerMap)))
