@@ -72,7 +72,7 @@ class BeerControllerIT {
                         .queryParam("beerStyle", BeerStyle.IPA.name())
                         .queryParam("pageSize", "800"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.size()", is(548)));
+                .andExpect(jsonPath("$.content.size()", is(549)));
     }
 
     @Test
