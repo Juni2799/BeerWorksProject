@@ -16,7 +16,8 @@ public class SpringSecurityConfig {
     @Bean
     @Order(1)
     public SecurityFilterChain actuatorSecurityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorise -> authorise.requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll());
+        http.securityMatcher(EndpointRequest.toAnyEndpoint())
+                .authorizeHttpRequests(authorise -> authorise.anyRequest().permitAll());
 
         return http.build();
     }
