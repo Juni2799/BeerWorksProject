@@ -7,6 +7,8 @@ import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.repository.BeerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,9 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Primary
@@ -29,12 +29,17 @@ public class BeerServiceJPA implements BeerService{
     @Autowired
     private BeerMapper beerMapper;
 
+    @Autowired
+    private CacheManager cacheManager;
+
+    @Cacheable(cacheNames = "beerCache", key = "#id")
     @Override
     public BeerDTO getBeerById(UUID id) {
         Beer savedBeer = beerRepository.findById(id).orElseThrow(() -> new NotFoundException("No beer found for id: " + id));
         return beerMapper.beerToBeerDTO(savedBeer);
     }
 
+    @Cacheable(cacheNames = "beerListCache")
     @Override
     public Page<BeerDTO> getBeers(String beerName, BeerStyle beerStyle, Boolean showInventory, Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = buildPageRequest(pageNumber, pageSize);
@@ -102,11 +107,18 @@ public class BeerServiceJPA implements BeerService{
 
     @Override
     public BeerDTO saveNewBeer(BeerDTO beerDTO) {
+        //For deleting cache for every new update
+        cacheManager.getCache("beerListCache").clear();
+
         return beerMapper.beerToBeerDTO(beerRepository.save(beerMapper.beerDTOtoBeer(beerDTO)));
     }
 
     @Override
     public void updateBeerById(UUID beerId, BeerDTO beerDTO) {
+        //For deleting cache for every new update
+        cacheManager.getCache("beerCache").evict(beerId);
+        cacheManager.getCache("beerListCache").clear();
+
         Beer savedBeer = beerRepository.findById(beerId).orElseThrow(() -> new NotFoundException("No beer found with id: " + beerId));
         savedBeer.setBeerName(beerDTO.getBeerName());
         savedBeer.setBeerStyle(beerDTO.getBeerStyle());
@@ -118,12 +130,20 @@ public class BeerServiceJPA implements BeerService{
 
     @Override
     public boolean deleteBeerById(UUID id) {
+        //For deleting cache for every new update
+        cacheManager.getCache("beerCache").evict(id);
+        cacheManager.getCache("beerListCache").clear();
+
         beerRepository.deleteById(id);
         return true;
     }
 
     @Override
     public void modifyBeerById(UUID beerId, BeerDTO beerDTO) {
+        //For deleting cache for every new update
+        cacheManager.getCache("beerCache").evict(beerId);
+        cacheManager.getCache("beerListCache").clear();
+
         Beer savedBeer = beerRepository.findById(beerId).orElseThrow(() -> new NotFoundException("No beer found with id: " + beerId));
         if(!beerDTO.getBeerName().isEmpty()) savedBeer.setBeerName(beerDTO.getBeerName());
         if(beerDTO.getBeerStyle() != null) savedBeer.setBeerStyle(beerDTO.getBeerStyle());
