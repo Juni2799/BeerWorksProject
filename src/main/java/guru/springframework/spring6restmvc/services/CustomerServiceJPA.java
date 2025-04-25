@@ -47,7 +47,9 @@ public class CustomerServiceJPA implements CustomerService{
     @Override
     public CustomerDTO saveNewCustomer(CustomerDTO customerDTO) {
         //For deleting cache for every new update
-        cacheManager.getCache("customerListCache").clear();
+        if(cacheManager.getCache("customerListCache") != null) {
+            cacheManager.getCache("customerListCache").clear();
+        }
 
         return customerMapper.customerToCustomerDTO(customerRepository.save(customerMapper.customerDTOtoCustomer(customerDTO)));
     }
@@ -55,8 +57,10 @@ public class CustomerServiceJPA implements CustomerService{
     @Override
     public void updateCustomerById(UUID customerId, CustomerDTO customerDTO) {
         //For deleting cache for every new update
-        cacheManager.getCache("customerCache").evict(customerId);
-        cacheManager.getCache("customerListCache").clear();
+        if(cacheManager.getCache("customerListCache") != null) {
+            cacheManager.getCache("customerCache").evict(customerId);
+            cacheManager.getCache("customerListCache").clear();
+        }
 
         Customer savedCustomer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("No beer found with id: " + customerId));
         savedCustomer.setName(customerDTO.getCustomerName());
@@ -67,8 +71,10 @@ public class CustomerServiceJPA implements CustomerService{
     @Override
     public boolean deleteCustomerById(UUID id) {
         //For deleting cache for every new update
-        cacheManager.getCache("customerCache").evict(id);
-        cacheManager.getCache("customerListCache").clear();
+        if(cacheManager.getCache("customerListCache") != null) {
+            cacheManager.getCache("customerCache").evict(id);
+            cacheManager.getCache("customerListCache").clear();
+        }
 
         customerRepository.deleteById(id);
         return true;
@@ -77,8 +83,10 @@ public class CustomerServiceJPA implements CustomerService{
     @Override
     public void modifyCustomerById(UUID customerId, CustomerDTO customerDTO) {
         //For deleting cache for every new update
-        cacheManager.getCache("customerCache").evict(customerId);
-        cacheManager.getCache("customerListCache").clear();
+        if(cacheManager.getCache("customerListCache") != null) {
+            cacheManager.getCache("customerCache").evict(customerId);
+            cacheManager.getCache("customerListCache").clear();
+        }
 
         Customer savedCustomer = customerRepository.findById(customerId).orElseThrow(() -> new NotFoundException("No beer found with id: " + customerId));
         if(!customerDTO.getCustomerName().isEmpty()) savedCustomer.setName(customerDTO.getCustomerName());

@@ -108,7 +108,9 @@ public class BeerServiceJPA implements BeerService{
     @Override
     public BeerDTO saveNewBeer(BeerDTO beerDTO) {
         //For deleting cache for every new update
-        cacheManager.getCache("beerListCache").clear();
+        if(cacheManager.getCache("beerListCache") != null) {
+            cacheManager.getCache("beerListCache").clear();
+        }
 
         return beerMapper.beerToBeerDTO(beerRepository.save(beerMapper.beerDTOtoBeer(beerDTO)));
     }
@@ -116,8 +118,10 @@ public class BeerServiceJPA implements BeerService{
     @Override
     public void updateBeerById(UUID beerId, BeerDTO beerDTO) {
         //For deleting cache for every new update
-        cacheManager.getCache("beerCache").evict(beerId);
-        cacheManager.getCache("beerListCache").clear();
+        if(cacheManager.getCache("beerListCache") != null) {
+            cacheManager.getCache("beerCache").evict(beerId);
+            cacheManager.getCache("beerListCache").clear();
+        }
 
         Beer savedBeer = beerRepository.findById(beerId).orElseThrow(() -> new NotFoundException("No beer found with id: " + beerId));
         savedBeer.setBeerName(beerDTO.getBeerName());
@@ -131,8 +135,10 @@ public class BeerServiceJPA implements BeerService{
     @Override
     public boolean deleteBeerById(UUID id) {
         //For deleting cache for every new update
-        cacheManager.getCache("beerCache").evict(id);
-        cacheManager.getCache("beerListCache").clear();
+        if(cacheManager.getCache("beerListCache") != null) {
+            cacheManager.getCache("beerCache").evict(id);
+            cacheManager.getCache("beerListCache").clear();
+        }
 
         beerRepository.deleteById(id);
         return true;
@@ -141,8 +147,10 @@ public class BeerServiceJPA implements BeerService{
     @Override
     public void modifyBeerById(UUID beerId, BeerDTO beerDTO) {
         //For deleting cache for every new update
-        cacheManager.getCache("beerCache").evict(beerId);
-        cacheManager.getCache("beerListCache").clear();
+        if(cacheManager.getCache("beerListCache") != null) {
+            cacheManager.getCache("beerCache").evict(beerId);
+            cacheManager.getCache("beerListCache").clear();
+        }
 
         Beer savedBeer = beerRepository.findById(beerId).orElseThrow(() -> new NotFoundException("No beer found with id: " + beerId));
         if(!beerDTO.getBeerName().isEmpty()) savedBeer.setBeerName(beerDTO.getBeerName());
