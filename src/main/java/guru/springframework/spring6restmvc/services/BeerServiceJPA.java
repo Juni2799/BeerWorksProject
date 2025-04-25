@@ -2,11 +2,15 @@ package guru.springframework.spring6restmvc.services;
 
 import guru.springframework.spring6restmvc.entities.Beer;
 import guru.springframework.spring6restmvc.events.BeerCreatedEvent;
+import guru.springframework.spring6restmvc.events.BeerDeletedEvent;
+import guru.springframework.spring6restmvc.events.BeerPatchedEvent;
+import guru.springframework.spring6restmvc.events.BeerUpdatedEvent;
 import guru.springframework.spring6restmvc.exceptions.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
 import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.repository.BeerRepository;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
@@ -142,6 +146,9 @@ public class BeerServiceJPA implements BeerService{
         savedBeer.setPrice(beerDTO.getPrice());
 
         beerRepository.save(savedBeer);
+
+        val auth = SecurityContextHolder.getContext().getAuthentication();
+        applicationEventPublisher.publishEvent(new BeerUpdatedEvent(savedBeer, auth));
     }
 
     @Override
@@ -153,6 +160,10 @@ public class BeerServiceJPA implements BeerService{
         }
 
         beerRepository.deleteById(id);
+
+        val auth = SecurityContextHolder.getContext().getAuthentication();
+        applicationEventPublisher.publishEvent(new BeerDeletedEvent(Beer.builder().id(id).build(), auth));
+
         return true;
     }
 
@@ -171,5 +182,8 @@ public class BeerServiceJPA implements BeerService{
         if(beerDTO.getPrice() != null) savedBeer.setPrice(beerDTO.getPrice());
 
         beerRepository.save(savedBeer);
+
+        val auth = SecurityContextHolder.getContext().getAuthentication();
+        applicationEventPublisher.publishEvent(new BeerPatchedEvent(savedBeer, auth));
     }
 }
