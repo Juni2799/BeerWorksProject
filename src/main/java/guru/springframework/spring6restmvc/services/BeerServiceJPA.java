@@ -1,6 +1,7 @@
 package guru.springframework.spring6restmvc.services;
 
 import guru.springframework.spring6restmvc.entities.Beer;
+import guru.springframework.spring6restmvc.events.BeerCreatedEvent;
 import guru.springframework.spring6restmvc.exceptions.NotFoundException;
 import guru.springframework.spring6restmvc.mappers.BeerMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
@@ -9,10 +10,13 @@ import guru.springframework.spring6restmvc.repository.BeerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -31,6 +35,9 @@ public class BeerServiceJPA implements BeerService{
 
     @Autowired
     private CacheManager cacheManager;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;  //For publishing events
 
     @Cacheable(cacheNames = "beerCache", key = "#id")
     @Override
@@ -112,7 +119,12 @@ public class BeerServiceJPA implements BeerService{
             cacheManager.getCache("beerListCache").clear();
         }
 
-        return beerMapper.beerToBeerDTO(beerRepository.save(beerMapper.beerDTOtoBeer(beerDTO)));
+        //Added below setup to publish an event for every new Beer created via method call (does not include the CSV data )
+        var savedBeer = beerRepository.save(beerMapper.beerDTOtoBeer(beerDTO));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        applicationEventPublisher.publishEvent(new BeerCreatedEvent(savedBeer, auth));
+        return beerMapper.beerToBeerDTO(savedBeer);
     }
 
     @Override
