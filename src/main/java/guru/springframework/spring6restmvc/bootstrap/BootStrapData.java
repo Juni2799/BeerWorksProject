@@ -1,12 +1,13 @@
 package guru.springframework.spring6restmvc.bootstrap;
 
-import guru.springframework.spring6restmvc.entities.Beer;
-import guru.springframework.spring6restmvc.entities.Customer;
+import guru.springframework.spring6restmvc.entities.*;
 import guru.springframework.spring6restmvc.model.BeerCsvRecord;
 import guru.springframework.spring6restmvc.model.BeerStyle;
+import guru.springframework.spring6restmvc.repository.BeerOrderRepository;
 import guru.springframework.spring6restmvc.repository.BeerRepository;
 import guru.springframework.spring6restmvc.repository.CustomerRepository;
 import guru.springframework.spring6restmvc.services.BeerCsvService;
+import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -19,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class BootStrapData implements CommandLineRunner {
@@ -28,14 +30,17 @@ public class BootStrapData implements CommandLineRunner {
     private CustomerRepository customerRepository;
 
     @Autowired
+    private BeerOrderRepository beerOrderRepository;
+
+    @Autowired
     private BeerCsvService beerCsvService;
 
     @Override
     public void run(String... args) throws Exception {
         loadBeerData();
         loadCustomerData();
-
         loadCsvData();
+        loadBeerOrderLineData();
     }
 
     private void loadCsvData() throws FileNotFoundException {
@@ -123,6 +128,55 @@ public class BootStrapData implements CommandLineRunner {
                     .build();
 
             customerRepository.saveAll(Arrays.asList(customer1, customer2, customer3));
+        }
+    }
+
+    private void loadBeerOrderLineData(){
+        if(beerOrderRepository.count() == 0){
+            val customers = customerRepository.findAll();
+            val beers = beerRepository.findAll();
+
+            val beerIterator = beers.iterator();
+
+            customers.forEach(customer -> {
+
+                beerOrderRepository.save(BeerOrder.builder()
+                        .customer(customer)
+                        .customerRef(customer.getName())
+                        .beerOrderLines(Set.of(
+                                BeerOrderLine.builder()
+                                        .beer(beerIterator.next())
+                                        .orderQuantity(1)
+                                        .build(),
+                                BeerOrderLine.builder()
+                                        .beer(beerIterator.next())
+                                        .orderQuantity(2)
+                                        .build()
+                        ))
+                        .beerOrderShipment(BeerOrderShipment.builder()
+                                .trackingNumber(BeerOrderShipment.generateRandomTrackingString())
+                                .build())
+                        .build());
+
+                beerOrderRepository.save(BeerOrder.builder()
+                        .customer(customer)
+                        .customerRef(customer.getName())
+                        .beerOrderLines(Set.of(
+                                BeerOrderLine.builder()
+                                        .beer(beerIterator.next())
+                                        .orderQuantity(1)
+                                        .build(),
+                                BeerOrderLine.builder()
+                                        .beer(beerIterator.next())
+                                        .orderQuantity(2)
+                                        .build()
+                        ))
+                        .beerOrderShipment(BeerOrderShipment.builder()
+                                .trackingNumber(BeerOrderShipment.generateRandomTrackingString())
+                                .build())
+                        .build());
+            });
+            //val orders = beerOrderRepository.findAll();
         }
     }
 }

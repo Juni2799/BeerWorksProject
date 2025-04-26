@@ -34,6 +34,6 @@ public class Customer {
     @UpdateTimestamp
     private LocalDateTime updateDate;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
     private Set<BeerOrder> beerOrders;
 }
