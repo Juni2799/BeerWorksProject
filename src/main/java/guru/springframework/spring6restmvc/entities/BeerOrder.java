@@ -9,6 +9,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -20,12 +21,13 @@ import java.util.UUID;
 @Builder
 public class BeerOrder {
 
-    public BeerOrder(UUID id, Long version, LocalDateTime createdDate, LocalDateTime lastModifiedDate, String customerRef,
+    public BeerOrder(UUID id, Long version, LocalDateTime createdDate, LocalDateTime lastModifiedDate, BigDecimal paymentAmount, String customerRef,
                      Customer customer, Set<BeerOrderLine> beerOrderLines, BeerOrderShipment beerOrderShipment) {
         this.id = id;
         this.version = version;
         this.createdDate = createdDate;
         this.lastModifiedDate = lastModifiedDate;
+        this.setPaymentAmount(paymentAmount);
         this.customerRef = customerRef;
         this.setCustomer(customer);
         this.setBeerOrderLines(beerOrderLines);
@@ -51,6 +53,8 @@ public class BeerOrder {
 
     @UpdateTimestamp
     private LocalDateTime lastModifiedDate;
+
+    private BigDecimal paymentAmount;
 
     public boolean isNew() {
         return this.id == null;

@@ -39,6 +39,10 @@ public class BeerOrderLine {
     @UpdateTimestamp
     private LocalDateTime lastModifiedDate;
 
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    private BeerOrderLineStatus beerOrderLineStatus = BeerOrderLineStatus.NEW;
+
     public boolean isNew() {
         return this.id == null;
     }

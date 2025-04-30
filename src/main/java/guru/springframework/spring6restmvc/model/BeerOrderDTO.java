@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public class BeerOrderDTO {
     private Long version;
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
+    private BigDecimal paymentAmount;
     @NotNull(message = "Customer ref is mandatory")
     private String customerRef;
     private CustomerDTO customer;
